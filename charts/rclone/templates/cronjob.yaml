@@ -49,7 +49,7 @@ spec:
             resources:
               {{- toYaml .Values.resources | nindent 14 }}
             volumeMounts:
-            - mountPath: "/.rclone.conf"
+            - mountPath: "/config/rclone/rclone.conf"
               name: rclone-config
               subPath: "rclone.conf"
             {{- range .Values.volumeMounts }}
