@@ -1,0 +1,21 @@
+apiVersion: v1
+entries:
+  rclone:
+  - apiVersion: v2
+    appVersion: 1.57.0
+    created: "2022-01-18T01:34:42.65895292Z"
+    description: A Helm chart for Kubernetes
+    digest: 1be328d7d1bf56c91e853b86dd1a463ac5b9e572b595aabc7d70ed6865ffc30c
+    home: https://rclone.org/
+    icon: https://rclone.org/img/logo_on_light__horizontal_color.svg
+    maintainers:
+    - email: m@gearage.ru
+      name: Mark Glants
+    - email: jmmaloney4@gmail.com
+      name: jmmaloney4
+    name: rclone
+    type: application
+    urls:
+    - https://github.com/MGlants/charts/releases/download/rclone-2.3.2/rclone-2.3.2.tgz
+    version: 2.3.2
+generated: "2022-01-18T01:34:42.350837785Z"
