@@ -36,7 +36,7 @@ config: |
 
 toolbox: false  # Run container to be `kubectl exec`-ed into
 subCommand: "copy"  # sync, delete, etc
-globalflags: []
+globalflags: ['--config /config/rclone/rclone.conf' ]
 backendflags: []
 from: ""
 to: ""
