@@ -1,0 +1,45 @@
+schedule: "0 0/12 * * *"
+successfulJobsHistoryLimit: 8
+failedJobsHistoryLimit: 5
+startingDeadlineSeconds: 43200  # 12 hours
+
+image:
+  repository: bitnami/rclone
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 1.57.0
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+initContainers: []
+
+config: |
+  # Rclone Config
+
+toolbox: false  # Run container to be `kubectl exec`-ed into
+subCommand: "copy"  # sync, delete, etc
+globalflags: []
+backendflags: []
+from: ""
+to: ""
+
+volumeMounts: []
+volumes: []

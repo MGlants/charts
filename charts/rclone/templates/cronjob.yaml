@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "rclone.fullname" . }}
+spec:
+  schedule: "{{ .Values.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.startingDeadlineSeconds }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "rclone.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: Never
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.initContainers }}
+          initContainers:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          containers:
+          - name: "rclone"
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+            {{- if not .Values.toolbox }}
+            args:
+            {{- range .Values.globalflags }}
+            - {{ . | quote }}
+            {{- end }}
+            - {{ .Values.subCommand | quote }}
+            - {{ .Values.from | quote }}
+            - {{ .Values.to | quote }}
+            {{- range .Values.backendflags }}
+            - {{ . | quote }}
+            {{- end }}
+            {{- else }}
+            command: ["sh", "-c", "while true; do sleep 86400; done"]
+            {{- end }}
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
+            volumeMounts:
+            - mountPath: "/.rclone.conf"
+              name: rclone-config
+              subPath: "rclone.conf"
+            {{- range .Values.volumeMounts }}
+            - {{- toYaml . | nindent 14 }}
+            {{- end}}
+          volumes:
+          - name: rclone-config
+            configMap:
+              name: {{ .Release.Name }}-rclone-config
+          {{- range .Values.volumes }}
+          - {{- toYaml . | nindent 12 }}
+          {{- end}}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
