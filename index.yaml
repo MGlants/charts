@@ -52,4 +52,14 @@ entries:
     urls:
     - https://github.com/MGlants/charts/releases/download/rclone-2.3.2/rclone-2.3.2.tgz
     version: 2.3.2
+  wg-access-server:
+  - apiVersion: v2
+    appVersion: v0.4.6
+    created: "2022-01-21T03:15:23.869810019Z"
+    description: A Wireguard VPN Access Server
+    digest: 4fd254762cf5c38940f1471377854bc3e761e70393d5788bd02f97508a9bb491
+    name: wg-access-server
+    urls:
+    - https://github.com/MGlants/charts/releases/download/wg-access-server-v0.4.7/wg-access-server-v0.4.7.tgz
+    version: v0.4.7
 generated: "2022-01-18T01:34:42.350837785Z"
