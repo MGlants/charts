@@ -1,5 +1,5 @@
 # wg-access-server config
-config: {}
+config: {   }
 
 web:
   config:
@@ -79,3 +79,20 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+##Addiditonal configuration to include in configmap
+additionalEnv: []
+#  - name: WG_WIREGUARD_PRIVATE_KEY
+#    valueFrom:
+#      secretKeyRef:
+#        name: "externalSecret"
+#        key: privateKey
+#  - name: WG_ADMIN_USERNAME
+#    valueFrom:
+#      secretKeyRef:
+#        name: "externalSecret"
+#        key: adminUsername
+#  - name: WG_ADMIN_PASSWORD
+#    valueFrom:
+#      secretKeyRef:
+#        name: externalSecret
+#        key: adminPassword
