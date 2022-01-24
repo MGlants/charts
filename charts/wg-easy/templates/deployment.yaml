@@ -1,0 +1,88 @@
+{{- $fullName := include "wg-easy.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wg-easy.fullname" . }}
+  labels:
+    {{- include "wg-easy.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    {{- if .Values.persistence.enabled  }}
+    type: {{ .Values.strategy.type | default "Recreate" | quote }}
+    {{- else }}
+    type: {{ .Values.strategy.type | default "RollingUpdate" | quote }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "wg-easy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "wg-easy.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 51821
+              protocol: TCP
+            - name: wireguard
+              containerPort: 51820
+              protocol: UDP
+          envFrom:
+            - configMapRef: 
+                name: {{ include "wg-easy.fullname" . }}
+          env:
+            {{- with .Values.additionalEnv }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if .Values.web.config.password }}
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ $fullName }}"
+                  key: password
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /etc/wireguard
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ $fullName }}{{- end }}
+        {{- end }}
+        {{- if not .Values.persistence.enabled }}
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
