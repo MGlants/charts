@@ -1,0 +1,132 @@
+# Default values for kea-dhcp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#More replicas is not available for now due Kea implementation of peers url should be ipv4 or ipv6 addresses instead of dnsname
+replicaCount: 1
+
+image:
+  repository: kometchtech/kea
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+clusterDomain: "cluster.local"
+kea:
+  dhcp4:
+    enabled: true
+    validlifetime: "4000"
+    renewtimer: "1000"
+    rebindtimer: "2000"
+    loglevel: "DEBUG"
+    options:
+      # - name: domain-name-servers
+      #   data: 192.168.1.2
+      # - name: domain-name
+      #   data: local
+      # - name: domain-search
+      #   data: local
+      # - code: 66
+      #   data: 192.168.1.2
+      #   name: tftp-server-name
+    reservations: {}
+      # - ip-address: "192.168.1.2"
+      #   hw-address: "aa:aa:aa:aa:aa:aa"
+      #   hostname: "hostname"
+      #   option-data:
+      #     - name: "tftp-servers"
+      #       data: "10.1.1.202,10.1.1.203"
+    subnets: {}
+      # - subnet: "192.168.1.0/24"
+      #   pools:
+      #     - pool: "192.168.1.10-192.168.1.254"
+      #   option-data:
+      #     - name: "routers"
+      #       data: "172.16.10.1"
+  dhcp6:
+    enabled: false
+    validlifetime: "4000"
+    renewtimer: "1000"
+    rebindtimer: "2000"
+    loglevel: "DEBUG"
+    options: {}
+    reservations: {}
+      # - ip-address: "2001:db8:1::100"
+      #   duid: "aa:aa:aa:aa:aa:aa"
+      #   hostname: "hostname"
+      #   option-data:
+      #     - name: "dns-servers"
+      #       data: "2001:db8:2::45, 2001:db8:2::100"
+    subnets: {}
+      # - subnet: "2001:db8:1::/48"
+      #   pools:
+      #     - pool: "2001:db8:1::/80"
+  ddns:
+    enabled: false
+    loglevel: "DEBUG"
+    forward: {}
+      # ddns-domains:
+      # - name: home.arpa.
+      #   key-name: ''
+      #   dns-servers:
+      #   - ip-address: 172.16.32.2
+      #     port: 53
+    reverse: {}
+      # ddns-domains:
+      # - name: 168.192.in-addr.arpa.
+      #   key-name: ''
+      #   dns-servers:
+      #   - ip-address: 172.16.32.2
+      #     port: 53
+  ctrlagent:
+    #Needed for HA and stork
+    enabled: false
+    loglevel: "DEBUG"
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  dhcp:
+      type: ClusterIP
+      port: 67
+  ctrl:
+      type: ClusterIP
+      port: 8000
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+persistence:
+  enabled: false
+  size: 100Mi

@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "kea-dhcp.fullname" . }}
+  labels:
+    {{- include "kea-dhcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ template "kea-dhcp.fullname" . }}-headless
+  selector:
+    matchLabels:
+      {{- include "kea-dhcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kea-dhcp.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kea-dhcp.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      - name: init-kea
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command:
+        - sh
+        - "-c"
+        - |
+          set -ex
+          cp /mnt/config-map/* /mnt/kea/
+          # IP=$(ip route get 1 | awk '{print $NF;exit}')
+          # ID=$(echo ${HOSTNAME} | sed -n 's/.*\([0-9]\)$/\1/p')
+          # sed -i "s/hostip-${ID}/${IP}/g" /mnt/kea/kea-dhcp4.conf
+          # sed -i "s/hostip-${ID}/${IP}/g" /mnt/kea/kea-dhcp6.conf
+          echo "Finding interface..."
+          interface=$(route | grep '^default' | grep -o '[^ ]*$')
+          echo "Selected interface $interface"
+          sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp4.conf
+          sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp6.conf
+          sed -i "s/hostname/${HOSTNAME}/g" /mnt/kea/kea-dhcp4.conf
+          sed -i "s/hostname/${HOSTNAME}/g" /mnt/kea/kea-dhcp6.conf
+        volumeMounts:
+        - name: kea-config
+          mountPath: /mnt/kea
+        - name: kea-configmap
+          mountPath: /mnt/config-map
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: dhcp
+              containerPort: 67
+              protocol: UDP
+            - name: control-agent
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+          volumeMounts:
+          - name: data
+            mountPath: /var/lib/kea
+          - name: kea-config
+            mountPath: /etc/kea
+      volumes:
+      - name: kea-config
+        emptyDir: {}
+      - name: kea-configmap
+        configMap:
+          name: "{{ include "kea-dhcp.fullname" . }}"
+{{- if .Values.persistence }}
+{{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      annotations:
+      {{- range $key, $value := .Values.persistence.annotations }}
+        {{ $key }}: {{ $value }}
+      {{- end }}
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      {{- if .Values.persistence.storageClass }}
+      {{- if (eq "-" .Values.persistence.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
+      {{- end }}
+{{- else }}
+      - name: data
+        emptyDir: {}
+{{- end }}
+{{- end }}

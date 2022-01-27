@@ -1,0 +1,248 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "kea-dhcp.fullname" . }}
+data:
+  kea-dhcp4.conf: |
+    {
+    {{- if .Values.kea.dhcp4.enabled }}
+        "Dhcp4": {
+            "lease-database": {
+                "type": "memfile",
+                "persist": true,
+                "name": "/var/lib/kea/dhcp4.leases"
+            },
+            "interfaces-config": {
+                "interfaces": [ "INTERFACE" ],
+                "dhcp-socket-type": "raw"
+            },
+            "valid-lifetime": {{ .Values.kea.dhcp4.validlifetime }},
+            "renew-timer": {{ .Values.kea.dhcp4.renewtimer }},
+            "rebind-timer": {{ .Values.kea.dhcp4.rebindtimer }},
+            "reservations-global": true,
+            "reservations-in-subnet": false,
+            {{- if .Values.kea.dhcp4.options }}
+            "option-data": {{ .Values.kea.dhcp4.options | toJson }},
+            {{- end }}
+            {{- if .Values.kea.dhcp4.reservations }}
+            "reservations": {{ .Values.kea.dhcp4.reservations | toJson }},
+            {{- end }}
+            {{- if .Values.kea.dhcp4.subnets }}
+            "subnet4": {{ .Values.kea.dhcp4.subnets | toJson }},
+            {{- end }}
+            {{ if gt .Values.replicaCount 1.0 }}
+            "control-socket": {
+                "socket-type": "unix",
+                "socket-name": "/tmp/kea-dhcp4-ctrl.sock"
+            },
+            "hooks-libraries": [{
+                "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
+                "parameters": { }
+            }, {
+                "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
+                "parameters": {
+                    "high-availability": [{
+                        "this-server-name": "hostname",
+                        "mode": "load-balancing",
+                        "heartbeat-delay": 10000,
+                        "max-response-delay": 10000,
+                        "max-ack-delay": 5000,
+                        "max-unacked-clients": 5,
+                        "peers": [
+                            {{- range $key, $value := until (.Values.replicaCount | int) }}
+                            {
+                                "name": "{{ template "kea-dhcp.fullname" $ }}-{{ $key }}",
+                                "url": "http://{{ template "kea-dhcp.fullname" $ }}-{{ $key }}.{{ template "kea-dhcp.fullname" $ }}-headless.{{ $.Release.Namespace}}.svc.{{ $.Values.clusterDomain }}:8000/",
+                                "role": "{{ if eq $key 0 }}primary{{ else}}secondary{{ end }}",
+                                "auto-failover": true
+                            }{{- if lt (add $key 1) ($.Values.replicaCount | int) }},{{- end }}
+                            {{- end }}
+                        ]
+                    }]
+                }
+            }],
+            {{- end }}
+            "loggers": [{
+                "name": "kea-dhcp4",
+                "output_options": [
+                    {
+                    "output": "stdout"
+                    }
+                ],
+                "severity": "{{ .Values.kea.dhcp4.loglevel }}"
+            }]
+        }
+    {{- end }}
+    }
+  kea-dhcp6.conf: |
+    {
+    {{- if .Values.kea.dhcp6.enabled }}
+        "Dhcp6": {
+            "lease-database": {
+                "type": "memfile",
+                "persist": true,
+                "name": "/var/lib/kea/dhcp6.leases"
+            },
+            "interfaces-config": {
+                "interfaces": [ "eth0" ],
+                "dhcp-socket-type": "raw"
+            },
+            "valid-lifetime": {{ .Values.kea.dhcp6.validlifetime }},
+            "renew-timer": {{ .Values.kea.dhcp6.renewtimer }},
+            "rebind-timer": {{ .Values.kea.dhcp6.rebindtimer }},
+            "reservations-global": true,
+            "reservations-in-subnet": false,
+            {{- if .Values.kea.dhcp6.options }}
+            "option-data": {{ .Values.kea.dhcp6.options | toJson }},
+            {{- end }}
+            {{- if .Values.kea.dhcp6.reservations }}
+            "reservations": {{ .Values.kea.dhcp6.reservations | toJson }},
+            {{- end }}
+            {{- if .Values.kea.dhcp6.subnets }}
+            "subnet6": {{ .Values.kea.dhcp6.subnets | toJson }},
+            {{- end }}
+            {{ if gt .Values.replicaCount 1.0 }}
+            "control-socket": {
+                "socket-type": "unix",
+                "socket-name": "/tmp/kea-dhcp6-ctrl.sock"
+            },
+            "hooks-libraries": [{
+                "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
+                "parameters": { }
+            }, {
+                "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
+                "parameters": {
+                    "high-availability": [{
+                        "this-server-name": "hostname",
+                        "mode": "load-balancing",
+                        "heartbeat-delay": 10000,
+                        "max-response-delay": 10000,
+                        "max-ack-delay": 5000,
+                        "max-unacked-clients": 5,
+                        "peers": [
+                            {{- range $key, $value := until (.Values.replicaCount | int) }}
+                            {
+                                "name": "{{ template "kea-dhcp.fullname" $ }}-{{ $key }}",
+                                "url": "http://{{ template "kea-dhcp.fullname" $ }}-{{ $key }}.{{ template "kea-dhcp.fullname" $ }}-headless.{{ $.Release.Namespace}}.svc.{{ $.Values.clusterDomain }}:8000/",
+                                "role": "{{ if eq $key 0 }}primary{{ else}}secondary{{ end }}",
+                                "auto-failover": true
+                            }{{- if lt (add $key 1) ($.Values.replicaCount | int) }},{{- end }}
+                            {{- end }}
+                        ]
+                    }]
+                }
+            }],
+            {{- end }}
+            "loggers": [{
+                "name": "kea-dhcp6",
+                "output_options": [
+                    {
+                    "output": "stdout"
+                    }
+                ],
+                "severity": "{{ .Values.kea.dhcp6.loglevel }}"
+            }]
+        }
+    {{- end }}
+    }
+  kea-dhcp-ddns.conf: |
+    {
+    {{- if .Values.kea.ddns.enabled }}
+      "DhcpDdns": {
+        "forward-ddns": {{ .Values.kea.ddns.forward | toJson }},
+        "reverse-ddns": {{ .Values.kea.ddns.reverse | toJson }},
+        "loggers": [
+          {
+            "name": "kea-dhcp-ddns",
+            "output_options": [
+              {
+                "output": "stdout"
+              }
+            ],
+            "severity": "{{ .Values.kea.ddns.loglevel }}"
+          }
+        ]
+      }
+    {{- end }}
+    }
+  kea-ctrl-agent.conf: |
+    {
+    {{- if .Values.kea.ctrlagent.enabled }}
+      "Control-agent": {
+        "http-host": "0.0.0.0",
+        "http-port": 8000,
+        "control-sockets": {
+          "dhcp4": {
+            "socket-type": "unix",
+            "socket-name": "/tmp/kea4-ctrl-socket"
+          },
+          "dhcp6": {
+            "socket-type": "unix",
+            "socket-name": "/tmp/kea6-ctrl-socket"
+          },
+          "d2": {
+            "socket-type": "unix",
+            "socket-name": "/tmp/kea-ddns-ctrl-socket"
+          }
+        },
+        "loggers": [
+          {
+            "name": "kea-ctrl-agent",
+            "output_options": [
+              {
+                "output": "stdout"
+              }
+            ],
+            "severity": "{{ .Values.kea.ctrlagent.loglevel }}"
+          }
+        ]
+      }
+    {{- end}}
+    }
+  keactrl.conf: |
+    #!/bin/sh
+    
+    # This is a configuration file for keactrl script which controls
+    # the startup, shutdown, reconfiguration and gathering the status
+    # of the Kea's processes.
+    
+    # Note that control agent must be launched after servers and netconf last.
+    
+    # shellcheck disable=SC2034
+    # SC2034: ... appears unused. Verify use (or export if used externally).
+    
+    # prefix holds the location where the Kea is installed.
+    prefix="/usr/local"
+    
+    # Location of Kea configuration files.
+    kea_dhcp4_config_file="/etc/kea/kea-dhcp4.conf"
+    kea_dhcp6_config_file="/etc/kea/kea-dhcp6.conf"
+    kea_dhcp_ddns_config_file="/etc/kea/kea-dhcp-ddns.conf"
+    kea_ctrl_agent_config_file="/etc/kea/kea-ctrl-agent.conf"
+    kea_netconf_config_file="/etc/kea/kea-netconf.conf"
+    
+    # Location of Kea binaries.
+    exec_prefix="${prefix}"
+    dhcp4_srv="${exec_prefix}/sbin/kea-dhcp4"
+    dhcp6_srv="${exec_prefix}/sbin/kea-dhcp6"
+    dhcp_ddns_srv="${exec_prefix}/sbin/kea-dhcp-ddns"
+    ctrl_agent_srv="${exec_prefix}/sbin/kea-ctrl-agent"
+    netconf_srv="${exec_prefix}/sbin/kea-netconf"
+    
+    # Start DHCPv4 server?
+    dhcp4={{- if .Values.kea.dhcp4.enabled }}yes{{- else }}no{{- end }}
+    
+    # Start DHCPv6 server?
+    dhcp6={{- if .Values.kea.dhcp6.enabled }}yes{{- else }}no{{- end }}
+    
+    # Start DHCP DDNS server?
+    dhcp_ddns={{- if .Values.kea.ddns.enabled }}yes{{- else }}no{{- end }}
+    
+    # Start Control Agent?
+    ctrl_agent={{- if .Values.kea.ctrlagent.enabled }}yes{{- else }}no{{- end }}
+    
+    # Start Netconf?
+    netconf=no
+    
+    # Be verbose?
+    kea_verbose=no
