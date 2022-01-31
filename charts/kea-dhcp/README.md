@@ -1,6 +1,6 @@
 # kea-dhcp
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.1](https://img.shields.io/badge/AppVersion-2.1.1-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
 
 Helm chart for kea-dhcp
 
@@ -66,7 +66,7 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | clusterDomain | string | `"cluster.local"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"kometchtech/kea"` |  |
+| image.repository | string | `"smailkoz/kea-dhcp"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | kea.ctrlagent.enabled | bool | `false` |  |
@@ -91,6 +91,10 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | kea.dhcp6.reservations | object | `{}` |  |
 | kea.dhcp6.subnets | object | `{}` |    duid: "aa:aa:aa:aa:aa:aa"   hostname: "hostname"   option-data:     - name: "dns-servers"       data: "2001:db8:2::45, 2001:db8:2::100" |
 | kea.dhcp6.validlifetime | string | `"4000"` |  |
+| metrics.enabled | bool | `false` |  |
+| metrics.service.annotations | object | `{"prometheus.io/port":"9547","prometheus.io/scrape":"true"}` |  loadBalancerIP: |
+| metrics.service.labels | object | `{}` |  |
+| metrics.service.type | string | `"ClusterIP"` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.enabled | bool | `false` |  |
@@ -114,19 +118,19 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 
 ## Changelog
 
-### Version 0.1.0
+### Version 0.2.0
 
 #### Added
 
-* Initial version
+* Added monitoring
 
 #### Changed
 
-N/A
+* Change image to one with exporter included
 
 #### Fixed
 
-N/A
+* Restart on configmap change
 
 ### Older versions
 

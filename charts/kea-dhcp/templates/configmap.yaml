@@ -21,6 +21,10 @@ data:
             "rebind-timer": {{ .Values.kea.dhcp4.rebindtimer }},
             "reservations-global": true,
             "reservations-in-subnet": false,
+            "control-socket": {
+                "socket-type": "unix",
+                "socket-name": "/tmp/kea4-ctrl-socket"
+            },
             {{- if .Values.kea.dhcp4.options }}
             "option-data": {{ .Values.kea.dhcp4.options | toJson }},
             {{- end }}
@@ -31,10 +35,6 @@ data:
             "subnet4": {{ .Values.kea.dhcp4.subnets | toJson }},
             {{- end }}
             {{ if gt .Values.replicaCount 1.0 }}
-            "control-socket": {
-                "socket-type": "unix",
-                "socket-name": "/tmp/kea-dhcp4-ctrl.sock"
-            },
             "hooks-libraries": [{
                 "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
                 "parameters": { }
@@ -92,6 +92,10 @@ data:
             "rebind-timer": {{ .Values.kea.dhcp6.rebindtimer }},
             "reservations-global": true,
             "reservations-in-subnet": false,
+            "control-socket": {
+                "socket-type": "unix",
+                "socket-name": "/tmp/kea6-ctrl-socket"
+            },
             {{- if .Values.kea.dhcp6.options }}
             "option-data": {{ .Values.kea.dhcp6.options | toJson }},
             {{- end }}
@@ -102,10 +106,6 @@ data:
             "subnet6": {{ .Values.kea.dhcp6.subnets | toJson }},
             {{- end }}
             {{ if gt .Values.replicaCount 1.0 }}
-            "control-socket": {
-                "socket-type": "unix",
-                "socket-name": "/tmp/kea-dhcp6-ctrl.sock"
-            },
             "hooks-libraries": [{
                 "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
                 "parameters": { }
@@ -151,6 +151,10 @@ data:
       "DhcpDdns": {
         "forward-ddns": {{ .Values.kea.ddns.forward | toJson }},
         "reverse-ddns": {{ .Values.kea.ddns.reverse | toJson }},
+        "control-socket": {
+            "socket-type": "unix",
+            "socket-name": "/tmp/kea-ddns-ctrl-socket"
+        },
         "loggers": [
           {
             "name": "kea-dhcp-ddns",

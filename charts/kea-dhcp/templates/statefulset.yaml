@@ -18,6 +18,7 @@ spec:
       {{- end }}
       labels:
         {{- include "kea-dhcp.selectorLabels" . | nindent 8 }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63}}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -64,6 +65,11 @@ spec:
             - name: control-agent
               containerPort: 8000
               protocol: TCP
+              {{- if .Values.metrics.enabled }}
+            - name: metrics
+              containerPort: 9547
+              protocol: TCP
+              {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.nodeSelector }}

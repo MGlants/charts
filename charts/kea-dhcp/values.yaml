@@ -6,7 +6,7 @@
 replicaCount: 1
 
 image:
-  repository: kometchtech/kea
+  repository: smailkoz/kea-dhcp
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -81,9 +81,20 @@ kea:
       #   - ip-address: 172.16.32.2
       #     port: 53
   ctrlagent:
-    #Needed for HA and stork
+    #Needed for HA, monitoring and stork
     enabled: false
     loglevel: "DEBUG"
+metrics:
+  enabled: false
+  service:
+    type: ClusterIP
+    ## Use serviceLoadBalancerIP to request a specific static IP,
+    ## otherwise leave blank
+    # loadBalancerIP:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9547"
+    labels: {}
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
