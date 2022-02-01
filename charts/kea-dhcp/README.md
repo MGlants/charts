@@ -1,6 +1,6 @@
 # kea-dhcp
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
 
 Helm chart for kea-dhcp
 
@@ -109,8 +109,12 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | resources.requests.cpu | string | `"100m"` |  |
 | resources.requests.memory | string | `"128Mi"` |  |
 | securityContext | object | `{}` |  |
+| service.ctrl.annotations | object | `{}` |  nodePort: |
+| service.ctrl.loadBalancerIP | string | `nil` |  |
 | service.ctrl.port | int | `8000` |  |
 | service.ctrl.type | string | `"ClusterIP"` |  |
+| service.dhcp.annotations | object | `{}` |  nodePort: |
+| service.dhcp.loadBalancerIP | string | `nil` |  |
 | service.dhcp.port | int | `67` |  |
 | service.dhcp.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
@@ -120,7 +124,7 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 
 ## Changelog
 
-### Version 0.3.0
+### Version 0.4.0
 
 #### Added
 
@@ -132,7 +136,7 @@ N/A
 
 #### Fixed
 
-* ddns config in dhcp4 and dhcp6
+N/A
 
 ### Older versions
 
