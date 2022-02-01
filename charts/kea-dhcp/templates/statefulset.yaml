@@ -45,8 +45,8 @@ spec:
           echo "Selected interface $interface"
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp4.conf
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp6.conf
-          sed -i "s/hostname/${HOSTNAME}/g" /mnt/kea/kea-dhcp4.conf
-          sed -i "s/hostname/${HOSTNAME}/g" /mnt/kea/kea-dhcp6.conf
+          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/kea-dhcp4.conf
+          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/kea-dhcp6.conf
         volumeMounts:
         - name: kea-config
           mountPath: /mnt/kea

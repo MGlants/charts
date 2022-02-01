@@ -153,7 +153,7 @@ data:
                 "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
                 "parameters": {
                     "high-availability": [{
-                        "this-server-name": "hostname",
+                        "this-server-name": "HOSTNAME",
                         "mode": "load-balancing",
                         "heartbeat-delay": 10000,
                         "max-response-delay": 10000,
