@@ -66,6 +66,8 @@ kea:
   ddns:
     enabled: false
     loglevel: "DEBUG"
+    prefix: "myhost"
+    suffix: "home.arpa."
     forward: {}
       # ddns-domains:
       # - name: home.arpa.

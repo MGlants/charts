@@ -1,6 +1,6 @@
 # kea-dhcp
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
 
 Helm chart for kea-dhcp
 
@@ -74,10 +74,12 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | kea.ddns.enabled | bool | `false` |  |
 | kea.ddns.forward | object | `{}` |  |
 | kea.ddns.loglevel | string | `"DEBUG"` |  |
+| kea.ddns.prefix | string | `"myhost"` |  |
 | kea.ddns.reverse | object | `{}` |  - name: home.arpa.   key-name: ''   dns-servers:   - ip-address: 172.16.32.2     port: 53 |
+| kea.ddns.suffix | string | `"home.arpa."` |  |
 | kea.dhcp4.enabled | bool | `true` |  |
 | kea.dhcp4.loglevel | string | `"DEBUG"` |  |
-| kea.dhcp4.options | string | `nil` |  |
+| kea.dhcp4.options | object | `{}` |  |
 | kea.dhcp4.rebindtimer | string | `"2000"` |  |
 | kea.dhcp4.renewtimer | string | `"1000"` |  |
 | kea.dhcp4.reservations | object | `{}` |    data: 192.168.1.2 - name: domain-name   data: local - name: domain-search   data: local - code: 66   data: 192.168.1.2   name: tftp-server-name |
@@ -118,19 +120,19 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 
 ## Changelog
 
-### Version 0.2.0
+### Version 0.3.0
 
 #### Added
 
-* Added monitoring
+N/A
 
 #### Changed
 
-* Change image to one with exporter included
+N/A
 
 #### Fixed
 
-* Restart on configmap change
+* ddns config in dhcp4 and dhcp6
 
 ### Older versions
 

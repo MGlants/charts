@@ -25,6 +25,26 @@ data:
                 "socket-type": "unix",
                 "socket-name": "/tmp/kea4-ctrl-socket"
             },
+            {{- if .Values.kea.ddns.enabled }}
+            "dhcp-ddns" : {
+                  "enable-updates" : true,
+                  "server-ip" : "127.0.0.1",
+                  "server-port" : 53001,
+                  "max-queue-size" : 2048,
+                  "ncr-protocol" : "UDP",
+                  "ncr-format" : "JSON"
+             },
+            "ddns-send-updates" : true,
+            "ddns-override-no-update" : true,
+            "ddns-override-client-update" : true,
+            "ddns-replace-client-name" : "when-not-present",
+            "ddns-generated-prefix": {{ .Values.kea.ddns.prefix | quote }},
+            "ddns-qualifying-suffix" : {{ .Values.kea.ddns.suffix | quote  }},
+            "ddns-update-on-renew" : false,
+            "ddns-use-conflict-resolution" : true,
+            "hostname-char-set": "[^A-Za-z0-9.-]",
+            "hostname-char-replacement": "",
+            {{- end }}
             {{- if .Values.kea.dhcp4.options }}
             "option-data": {{ .Values.kea.dhcp4.options | toJson }},
             {{- end }}
@@ -96,6 +116,26 @@ data:
                 "socket-type": "unix",
                 "socket-name": "/tmp/kea6-ctrl-socket"
             },
+            {{- if .Values.kea.ddns.enabled }}
+            "dhcp-ddns" : {
+                  "enable-updates" : true,
+                  "server-ip" : "::1",
+                  "server-port" : 53001,
+                  "max-queue-size" : 2048,
+                  "ncr-protocol" : "UDP",
+                  "ncr-format" : "JSON"
+             },
+            "ddns-send-updates" : true,
+            "ddns-override-no-update" : true,
+            "ddns-override-client-update" : true,
+            "ddns-replace-client-name" : "when-not-present",
+            "ddns-generated-prefix": {{ .Values.kea.ddns.prefix | quote }},
+            "ddns-qualifying-suffix" : {{ .Values.kea.ddns.suffix | quote }},
+            "ddns-update-on-renew" : false,
+            "ddns-use-conflict-resolution" : true,
+            "hostname-char-set": "[^A-Za-z0-9.-]",
+            "hostname-char-replacement": "",
+            {{- end }}
             {{- if .Values.kea.dhcp6.options }}
             "option-data": {{ .Values.kea.dhcp6.options | toJson }},
             {{- end }}
