@@ -21,7 +21,7 @@ kea:
     renewtimer: "1000"
     rebindtimer: "2000"
     loglevel: "DEBUG"
-    options:
+    options: {}
       # - name: domain-name-servers
       #   data: 192.168.1.2
       # - name: domain-name
