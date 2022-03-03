@@ -1,8 +1,8 @@
 # subspace
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: 1.30.3070.59](https://img.shields.io/badge/AppVersion-1.30.3070.59-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: 1.5.0](https://img.shields.io/badge/AppVersion-1.5.0-informational?style=flat-square)
 
-A helm chart for a subspace server-side deployment.
+A helm chart for a subspace deployment.
 
 ## Maintainers
 
@@ -16,20 +16,26 @@ A helm chart for a subspace server-side deployment.
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | image.pullPolicy | string | `"Always"` |  |
-| image.repository | string | `"goofball222/subspace"` |  |
+| image.repository | string | `"subspacecommunity/subspace"` |  |
 | ingress.annotations | object | `{}` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts | string | `nil` |  kubernetes.io/tls-acme: "true" |
+| ingress.enabled | bool | `true` |  |
+| ingress.hosts | list | `["www.example.com"]` |  kubernetes.io/tls-acme: "true" |
 | ingress.tls | list | `[]` |  |
 | nodeSelector | object | `{}` |  |
-| ports.https | int | `443` |  |
-| ports.openvpn | int | `1194` |  |
-| ports.wireguard | int | `1195` |  |
-| subspace | object | `{"debug":"false","mongoURI":"mongodb://mongo:27017/subspace","opts":"","wireguard":"false"}` |  DNS should be able to resolve the service by this name for subspace to function. |
+| persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistence.annotations | object | `{}` |  |
+| persistence.enabled | bool | `false` |  |
+| persistence.size | string | `"100Mi"` |  storageClass: "-" |
+| persistence.subPath | string | `""` |  |
+| ports.wireguard | int | `51820` |  |
 | privileged.enabled | bool | `true` |  |
 | replicas | int | `1` |  This is '1' by default. Your subspace cluster number will be affected by this. |
 | resources | object | `{}` |  |
 | service | object | `{"annotations":{},"externalTrafficPolicy":"Local","type":"LoadBalancer"}` |  Be sure to add the appropriate domain name, cert ARN, and ssl-negotiation-policy (a default is used here). |
+| subspace.endpoint | string | `"wg.example.com"` |  |
+| subspace.ipv4pool | string | `"10.99.97.0/24"` |  |
+| subspace.ipv6pool | string | `"fd00::10:97:0/112"` |  |
+| subspace.nameservers | string | `"1.1.1.1,1.0.0.1"` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
