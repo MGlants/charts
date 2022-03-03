@@ -1,0 +1,41 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "subspace.fullname" . }}-web
+  labels:
+    {{- include "subspace.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "subspace.selectorLabels" . | nindent 4 }}
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "subspace.fullname" . }}
+  labels:
+    {{- include "subspace.labels" . | nindent 4 }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  annotations:
+{{ toYaml .Values.service.annotations | trim | indent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "subspace.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.type }}
+  {{- if (or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort")) }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if not (empty .Values.service.loadBalancerIP) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+  - name: wireguard
+    port: {{ .Values.ports.wireguard }}
+    protocol: UDP
+    targetPort: wireguard

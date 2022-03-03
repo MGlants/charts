@@ -1,0 +1,82 @@
+
+{{- $fullName := include "subspace.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $fullName }}"
+  labels:
+    {{- include "subspace.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "subspace.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "subspace.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.privileged.enabled }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 51820
+              name: wireguard
+              protocol: UDP
+          env:
+          - name: SUBSPACE_HTTP_HOST
+            value: {{first .Values.ingress.hosts | quote }}
+          - name: SUBSPACE_LETSENCRYPT
+            value: "false"
+          - name: SUBSPACE_ENDPOINT_HOST
+            value: {{ .Values.subspace.endpoint | quote }}
+          - name: SUBSPACE_NAMESERVER
+            value: {{ .Values.subspace.nameservers | quote}}
+          - name: SUBSPACE_IPV4_POOL
+            value: {{ .Values.subspace.ipv4pool | quote}}
+          - name: SUBSPACE_IPV6_POOL
+            value: {{ .Values.subspace.ipv6pool | quote}}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ $fullName }}{{- end }}
+        {{- end }}
+        {{- if not .Values.persistence.enabled }}
+          emptyDir: {}
+        {{- end }}
