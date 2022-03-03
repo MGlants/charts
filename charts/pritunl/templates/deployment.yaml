@@ -1,0 +1,80 @@
+
+{{- $fullName := include "pritunl.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ $fullName }}"
+  labels:
+    {{- include "pritunl.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "pritunl.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pritunl.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.privileged.enabled }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+            - containerPort: 1194
+              name: openvpn
+              protocol: TCP
+            - containerPort: 1194
+              name: openvpn-udp
+              protocol: UDP
+            - containerPort: 1195
+              name: wireguard
+              protocol: UDP
+            - containerPort: 9700
+              name: reverse-http
+              protocol: TCP
+          env:
+          - name: MONGODB_URI
+            value: {{ .Values.pritunl.mongoURI | quote }}
+          - name: PRITUNL_OPTS
+            value: {{ .Values.pritunl.opts | quote }}
+          - name: DEBUG
+            value: {{ .Values.pritunl.debug | quote}}
+          - name: REVERSE_PROXY
+            value: "true"
+          - name: WIREGUARD
+            value: {{ .Values.pritunl.wireguard | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

@@ -1,0 +1,85 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "pritunl.fullname" . }}-web
+  labels:
+    {{- include "pritunl.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "pritunl.selectorLabels" . | nindent 4 }}
+  type: ClusterIP
+  ports:
+  - name: reverse-http
+    port: 9700
+    protocol: TCP
+    targetPort: reverse-http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "pritunl.fullname" . }}
+  labels:
+    {{- include "pritunl.labels" . | nindent 4 }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  annotations:
+{{ toYaml .Values.service.annotations | trim | indent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "pritunl.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.type }}
+  {{- if (or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort")) }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if not (empty .Values.service.loadBalancerIP) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+  - name: openvpn
+    port: {{ .Values.ports.openvpn }}
+    protocol: TCP
+    targetPort: openvpn
+  {{- if ne .Values.service.type "LoadBalancer" }}
+  - name: openvpn-udp
+    port: {{ .Values.ports.openvpn }}
+    protocol: UDP
+    targetPort: openvpn-udp
+  - name: wireguard
+    port: {{ .Values.ports.wireguard }}
+    protocol: UDP
+    targetPort: wireguard
+  {{- end }}
+  # - name: https
+  #   port: {{ .Values.ports.https }}
+  #   protocol: TCP
+  #   targetPort: https
+---
+{{- if eq .Values.service.type "LoadBalancer" }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "pritunl.fullname" . }}-udp
+  labels:
+    {{- include "pritunl.labels" . | nindent 4 }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  annotations:
+{{ toYaml .Values.service.annotations | trim | indent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- include "pritunl.selectorLabels" . | nindent 4 }}
+  type: LoadBalancer
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- if not (empty .Values.service.loadBalancerIP) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+  - name: openvpn-udp
+    port: {{ .Values.ports.openvpn }}
+    protocol: UDP
+    targetPort: openvpn-udp
+  - name: wireguard
+    port: {{ .Values.ports.wireguard }}
+    protocol: UDP
+    targetPort: wireguard
+{{- end }}
