@@ -138,6 +138,19 @@ entries:
     urls:
     - https://github.com/MGlants/charts/releases/download/kea-dhcp-0.1.0/kea-dhcp-0.1.0.tgz
     version: 0.1.0
+  pritunl:
+  - apiVersion: v1
+    appVersion: 1.30.3070.59
+    created: "2022-03-03T02:19:12.390104675Z"
+    description: A helm chart for a Pritunl server-side deployment.
+    digest: 9480a43b21357933e4f1076ceb0d91fcb5281d10e92b2c49a5bb4b2e82bc8769
+    maintainers:
+    - email: mark@glants.xyz
+      name: Mark Glants
+    name: pritunl
+    urls:
+    - https://github.com/MGlants/charts/releases/download/pritunl-0.1.0/pritunl-0.1.0.tgz
+    version: 0.1.0
   rclone:
   - apiVersion: v2
     appVersion: 1.57.0
