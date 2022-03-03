@@ -203,6 +203,19 @@ entries:
     urls:
     - https://github.com/MGlants/charts/releases/download/rclone-2.3.2/rclone-2.3.2.tgz
     version: 2.3.2
+  subspace:
+  - apiVersion: v1
+    appVersion: 1.5.0
+    created: "2022-03-03T03:47:18.988764972Z"
+    description: A helm chart for a subspace deployment.
+    digest: 407a3010ed3c108ba5ca13615ad5893be2c653ef6e39a242f51f6c8ee5766ce8
+    maintainers:
+    - email: mark@glants.xyz
+      name: Mark Glants
+    name: subspace
+    urls:
+    - https://github.com/MGlants/charts/releases/download/subspace-0.1.0/subspace-0.1.0.tgz
+    version: 0.1.0
   wg-access-server:
   - apiVersion: v2
     appVersion: v0.4.6
