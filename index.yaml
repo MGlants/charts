@@ -3,6 +3,25 @@ entries:
   kea-dhcp:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: support for high-availability
+    apiVersion: v2
+    appVersion: 2.1.2
+    created: "2023-05-02T17:43:36.707655842Z"
+    description: Helm chart for kea-dhcp
+    digest: 1e72961a895ad497f17033eaa466c6e8d8825d29f95f29b5e652b0b193f7771e
+    home: https://www.isc.org/kea/
+    icon: https://raw.githubusercontent.com/isc-projects/kea/3eee114614162b087e415e0a6ce1057d422c8174/doc/images/kea-logo-100x70.png
+    maintainers:
+    - email: m@gearage.ru
+      name: Mark Glants
+    name: kea-dhcp
+    type: application
+    urls:
+    - https://github.com/MGlants/charts/releases/download/kea-dhcp-0.5.0/kea-dhcp-0.5.0.tgz
+    version: 0.5.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: fixed
           description: tollerations, nodeSelector, affinity
     apiVersion: v2
