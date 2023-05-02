@@ -48,17 +48,12 @@ spec:
         - |
           set -ex
           cp /mnt/config-map/* /mnt/kea/
-          # IP=$(ip route get 1 | awk '{print $NF;exit}')
-          # ID=$(echo ${HOSTNAME} | sed -n 's/.*\([0-9]\)$/\1/p')
-          # sed -i "s/hostip-${ID}/${IP}/g" /mnt/kea/kea-dhcp4.conf
-          # sed -i "s/hostip-${ID}/${IP}/g" /mnt/kea/kea-dhcp6.conf
           echo "Finding interface..."
           interface=$(route | grep '^default' | grep -o '[^ ]*$')
           echo "Selected interface $interface"
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp4.conf
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp6.conf
-          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/ha-init.json
-          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/ha-init.json
+          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/ha-init.json || true
           touch /mnt/kea/ha.json
         volumeMounts:
         - name: kea-config
@@ -90,6 +85,7 @@ spec:
             mountPath: /var/lib/kea
           - name: kea-config
             mountPath: /etc/kea
+        {{ if gt .Values.replicaCount 1.0 }}
         - name: {{ .Chart.Name }}-sidecar
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -105,6 +101,7 @@ spec:
           volumeMounts:
           - name: kea-config
             mountPath: /etc/kea
+        {{- end }}
       volumes:
       - name: kea-config
         emptyDir: {}

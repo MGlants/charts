@@ -1,6 +1,6 @@
 # kea-dhcp
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
+![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
 
 Helm chart for kea-dhcp
 
@@ -132,11 +132,11 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 
 ## Changelog
 
-### Version 0.5.0
+### Version 0.5.1
 
 #### Added
 
-* support for high-availability
+N/A
 
 #### Changed
 
@@ -144,7 +144,7 @@ N/A
 
 #### Fixed
 
-N/A
+* sidecar not needed when replicas = 1, init-container failed when created json files because of HA
 
 ### Older versions
 
