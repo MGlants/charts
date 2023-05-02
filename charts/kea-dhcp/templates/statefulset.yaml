@@ -57,8 +57,9 @@ spec:
           echo "Selected interface $interface"
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp4.conf
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp6.conf
-          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/kea-dhcp4.conf
-          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/kea-dhcp6.conf
+          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/ha-init.json
+          sed -i "s/HOSTNAME/${HOSTNAME}/g" /mnt/kea/ha-init.json
+          touch /mnt/kea/ha.json
         volumeMounts:
         - name: kea-config
           mountPath: /mnt/kea
@@ -70,7 +71,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-  
           ports:
             - name: dhcp
               containerPort: 67
@@ -88,6 +88,21 @@ spec:
           volumeMounts:
           - name: data
             mountPath: /var/lib/kea
+          - name: kea-config
+            mountPath: /etc/kea
+        - name: {{ .Chart.Name }}-sidecar
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.sidecar.image.repository }}:{{ .Values.sidecar.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.sidecar.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.sidecar.resources | nindent 12 }}
+          env:
+            - name: STATEFULSET_LABEL
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['app.kubernetes.io/instance']
+          volumeMounts:
           - name: kea-config
             mountPath: /etc/kea
       volumes:

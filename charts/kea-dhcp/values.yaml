@@ -10,6 +10,19 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+sidecar:
+  image:
+    repository: smailkoz/kea-dhcp-sidecar
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is latest
+    tag: ""
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -98,13 +111,19 @@ metrics:
       prometheus.io/port: "9547"
     labels: {}
 serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
+role:
+  # Annotations to add to the Role
+  annotations: {}
+
+roleBinding:
+  # Annotations to add to the RoleBinding
+  annotations: {}
 
 podAnnotations: {}
 
@@ -172,6 +191,16 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+  # affinity:
+  #   podAntiAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       - labelSelector:
+  #           matchExpressions:
+  #             - key: app.kubernetes.io/name
+  #               operator: In
+  #               values:
+  #                 - kea-dhcp
+  #         topologyKey: kubernetes.io/hostname
 
 persistence:
   enabled: false

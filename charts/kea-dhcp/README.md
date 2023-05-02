@@ -1,6 +1,6 @@
 # kea-dhcp
 
-![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
 
 Helm chart for kea-dhcp
 
@@ -108,6 +108,8 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | resources.limits.memory | string | `"256Mi"` |  |
 | resources.requests.cpu | string | `"100m"` |  |
 | resources.requests.memory | string | `"128Mi"` |  |
+| role.annotations | object | `{}` |  |
+| roleBinding.annotations | object | `{}` |  |
 | securityContext | object | `{}` |  |
 | service.ctrl.annotations | object | `{}` |  nodePort: |
 | service.ctrl.loadBalancerIP | string | `nil` |  |
@@ -118,17 +120,23 @@ helm install kea-dhcp mglants/kea-dhcp -f values.yaml
 | service.dhcp.port | int | `67` |  |
 | service.dhcp.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  If not set and create is true, a name is generated using the fullname template |
+| sidecar.image.pullPolicy | string | `"IfNotPresent"` |  |
+| sidecar.image.repository | string | `"smailkoz/kea-dhcp-sidecar"` |  |
+| sidecar.image.tag | string | `""` |  |
+| sidecar.resources.limits.cpu | string | `"50m"` |  |
+| sidecar.resources.limits.memory | string | `"128Mi"` |  |
+| sidecar.resources.requests.cpu | string | `"10m"` |  |
+| sidecar.resources.requests.memory | string | `"32Mi"` |  |
 | tolerations | list | `[]` |  |
 
 ## Changelog
 
-### Version 0.4.2
+### Version 0.5.0
 
 #### Added
 
-N/A
+* support for high-availability
 
 #### Changed
 
@@ -136,7 +144,7 @@ N/A
 
 #### Fixed
 
-* tollerations, nodeSelector, affinity
+N/A
 
 ### Older versions
 

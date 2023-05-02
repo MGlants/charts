@@ -55,32 +55,7 @@ data:
             "subnet4": {{ .Values.kea.dhcp4.subnets | toJson }},
             {{- end }}
             {{ if gt .Values.replicaCount 1.0 }}
-            "hooks-libraries": [{
-                "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
-                "parameters": { }
-            }, {
-                "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
-                "parameters": {
-                    "high-availability": [{
-                        "this-server-name": "hostname",
-                        "mode": "load-balancing",
-                        "heartbeat-delay": 10000,
-                        "max-response-delay": 10000,
-                        "max-ack-delay": 5000,
-                        "max-unacked-clients": 5,
-                        "peers": [
-                            {{- range $key, $value := until (.Values.replicaCount | int) }}
-                            {
-                                "name": "{{ template "kea-dhcp.fullname" $ }}-{{ $key }}",
-                                "url": "http://{{ template "kea-dhcp.fullname" $ }}-{{ $key }}.{{ template "kea-dhcp.fullname" $ }}-headless.{{ $.Release.Namespace}}.svc.{{ $.Values.clusterDomain }}:8000/",
-                                "role": "{{ if eq $key 0 }}primary{{ else}}secondary{{ end }}",
-                                "auto-failover": true
-                            }{{- if lt (add $key 1) ($.Values.replicaCount | int) }},{{- end }}
-                            {{- end }}
-                        ]
-                    }]
-                }
-            }],
+            <?include "ha.json"?>
             {{- end }}
             "loggers": [{
                 "name": "kea-dhcp4",
@@ -146,32 +121,7 @@ data:
             "subnet6": {{ .Values.kea.dhcp6.subnets | toJson }},
             {{- end }}
             {{ if gt .Values.replicaCount 1.0 }}
-            "hooks-libraries": [{
-                "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
-                "parameters": { }
-            }, {
-                "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
-                "parameters": {
-                    "high-availability": [{
-                        "this-server-name": "HOSTNAME",
-                        "mode": "load-balancing",
-                        "heartbeat-delay": 10000,
-                        "max-response-delay": 10000,
-                        "max-ack-delay": 5000,
-                        "max-unacked-clients": 5,
-                        "peers": [
-                            {{- range $key, $value := until (.Values.replicaCount | int) }}
-                            {
-                                "name": "{{ template "kea-dhcp.fullname" $ }}-{{ $key }}",
-                                "url": "http://{{ template "kea-dhcp.fullname" $ }}-{{ $key }}.{{ template "kea-dhcp.fullname" $ }}-headless.{{ $.Release.Namespace}}.svc.{{ $.Values.clusterDomain }}:8000/",
-                                "role": "{{ if eq $key 0 }}primary{{ else}}secondary{{ end }}",
-                                "auto-failover": true
-                            }{{- if lt (add $key 1) ($.Values.replicaCount | int) }},{{- end }}
-                            {{- end }}
-                        ]
-                    }]
-                }
-            }],
+            <?include "ha.json"?>
             {{- end }}
             "loggers": [{
                 "name": "kea-dhcp6",
@@ -290,3 +240,24 @@ data:
     
     # Be verbose?
     kea_verbose=no
+  {{ if gt .Values.replicaCount 1.0 }}
+  ha-init.json: |
+
+    "hooks-libraries": [{
+        "library": "/usr/local/lib/kea/hooks/libdhcp_lease_cmds.so",
+        "parameters": { }
+    }, {
+        "library": "/usr/local/lib/kea/hooks/libdhcp_ha.so",
+        "parameters": {
+            "high-availability": [{
+                "this-server-name": "HOSTNAME",
+                "mode": "load-balancing",
+                "heartbeat-delay": 10000,
+                "max-response-delay": 10000,
+                "max-ack-delay": 5000,
+                "max-unacked-clients": 5,
+                <?include "peers.json"?>
+            }]
+        }
+    }],
+  {{- end }}
