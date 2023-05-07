@@ -80,6 +80,54 @@ spec:
               {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - >
+              {{- if .Values.kea.dhcp4.enabled }}
+                if keactrl status | grep -q 'DHCPv4 server: active'; then
+                  exit 0;
+                else
+                  exit 1;
+                fi
+              {{- end }}
+              {{- if .Values.kea.dhcp6.enabled }}
+                if keactrl status | grep -q 'DHCPv6 server: active'; then
+                  exit 0;
+                else
+                  exit 1;
+                fi
+              {{- end }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - >
+              {{- if .Values.kea.dhcp4.enabled }}
+                if keactrl status | grep -q 'DHCPv4 server: active'; then
+                  exit 0;
+                else
+                  exit 1;
+                fi
+              {{- end }}
+              {{- if .Values.kea.dhcp6.enabled }}
+                if keactrl status | grep -q 'DHCPv6 server: active'; then
+                  exit 0;
+                else
+                  exit 1;
+                fi
+              {{- end }}
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          {{- end }}
           volumeMounts:
           - name: data
             mountPath: /var/lib/kea
