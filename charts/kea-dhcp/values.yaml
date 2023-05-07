@@ -185,7 +185,10 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-
+readinessProbe:
+  enabled: true
+livenessProbe:
+  enabled: true
 nodeSelector: {}
 
 tolerations: []
