@@ -3,6 +3,27 @@ entries:
   kea-dhcp:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: docker image refactoring
+        - kind: changed
+          description: path changes for mounts
+    apiVersion: v2
+    appVersion: 2.1.8
+    created: "2024-05-14T00:01:14.145718867Z"
+    description: Helm chart for kea-dhcp
+    digest: f248678c386bcdd85a5baf00c2df9be1358207063a2e0b0a4f74f5d618bf46ea
+    home: https://www.isc.org/kea/
+    icon: https://raw.githubusercontent.com/isc-projects/kea/3eee114614162b087e415e0a6ce1057d422c8174/doc/images/kea-logo-100x70.png
+    maintainers:
+    - email: m@gearage.ru
+      name: Mark Glants
+    name: kea-dhcp
+    type: application
+    urls:
+    - https://github.com/MGlants/charts/releases/download/kea-dhcp-0.7.0/kea-dhcp-0.7.0.tgz
+    version: 0.7.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: fixed
           description: probes values fixed
     apiVersion: v2
