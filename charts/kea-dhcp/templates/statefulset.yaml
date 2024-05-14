@@ -130,9 +130,9 @@ spec:
           {{- end }}
           volumeMounts:
           - name: data
-            mountPath: /var/lib/kea
+            mountPath: /data
           - name: kea-config
-            mountPath: /etc/kea
+            mountPath: /config/kea
         {{ if gt .Values.replicaCount 1.0 }}
         - name: {{ .Chart.Name }}-sidecar
           securityContext:
@@ -148,7 +148,7 @@ spec:
                   fieldPath: metadata.labels['app.kubernetes.io/instance']
           volumeMounts:
           - name: kea-config
-            mountPath: /etc/kea
+            mountPath: /config/kea
         {{- end }}
       volumes:
       - name: kea-config

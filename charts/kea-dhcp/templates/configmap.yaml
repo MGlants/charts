@@ -10,7 +10,7 @@ data:
             "lease-database": {
                 "type": "memfile",
                 "persist": true,
-                "name": "/var/lib/kea/dhcp4.leases"
+                "name": "/data/dhcp4.leases"
             },
             "interfaces-config": {
                 "interfaces": [ "INTERFACE" ],
@@ -23,7 +23,7 @@ data:
             "reservations-in-subnet": false,
             "control-socket": {
                 "socket-type": "unix",
-                "socket-name": "/tmp/kea4-ctrl-socket"
+                "socket-name": "/run/kea/kea-dhcp4-ctrl.sock"
             },
             {{- if .Values.kea.ddns.enabled }}
             "dhcp-ddns" : {
@@ -76,7 +76,7 @@ data:
             "lease-database": {
                 "type": "memfile",
                 "persist": true,
-                "name": "/var/lib/kea/dhcp6.leases"
+                "name": "/data/dhcp6.leases"
             },
             "interfaces-config": {
                 "interfaces": [ "eth0" ],
@@ -89,7 +89,7 @@ data:
             "reservations-in-subnet": false,
             "control-socket": {
                 "socket-type": "unix",
-                "socket-name": "/tmp/kea6-ctrl-socket"
+                "socket-name": "/run/kea/kea-dhcp6-ctrl.sock"
             },
             {{- if .Values.kea.ddns.enabled }}
             "dhcp-ddns" : {
@@ -143,7 +143,7 @@ data:
         "reverse-ddns": {{ .Values.kea.ddns.reverse | toJson }},
         "control-socket": {
             "socket-type": "unix",
-            "socket-name": "/tmp/kea-ddns-ctrl-socket"
+            "socket-name": "/run/kea/kea-dhcp-ddns-ctrl.sock"
         },
         "loggers": [
           {
@@ -168,15 +168,15 @@ data:
         "control-sockets": {
           "dhcp4": {
             "socket-type": "unix",
-            "socket-name": "/tmp/kea4-ctrl-socket"
+            "socket-name": "/run/kea/kea-dhcp4-ctrl.sock"
           },
           "dhcp6": {
             "socket-type": "unix",
-            "socket-name": "/tmp/kea6-ctrl-socket"
+            "socket-name": "/run/kea/kea-dhcp6-ctrl.sock"
           },
           "d2": {
             "socket-type": "unix",
-            "socket-name": "/tmp/kea-ddns-ctrl-socket"
+            "socket-name": "/run/kea/kea-dhcp-ddns-ctrl.sock"
           }
         },
         "loggers": [
@@ -209,11 +209,11 @@ data:
     prefix="/usr/local"
     
     # Location of Kea configuration files.
-    kea_dhcp4_config_file="/etc/kea/kea-dhcp4.conf"
-    kea_dhcp6_config_file="/etc/kea/kea-dhcp6.conf"
-    kea_dhcp_ddns_config_file="/etc/kea/kea-dhcp-ddns.conf"
-    kea_ctrl_agent_config_file="/etc/kea/kea-ctrl-agent.conf"
-    kea_netconf_config_file="/etc/kea/kea-netconf.conf"
+    kea_dhcp4_config_file="/config/kea/kea-dhcp4.conf"
+    kea_dhcp6_config_file="/config/kea/kea-dhcp6.conf"
+    kea_dhcp_ddns_config_file="/config/kea/kea-dhcp-ddns.conf"
+    kea_ctrl_agent_config_file="/config/kea/kea-ctrl-agent.conf"
+    kea_netconf_config_file="/config/kea/kea-netconf.conf"
     
     # Location of Kea binaries.
     exec_prefix="${prefix}"

@@ -6,16 +6,16 @@
 replicaCount: 1
 
 image:
-  repository: smailkoz/kea-dhcp
+  repository: ghcr.io/mglants/kea-dhcp
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 sidecar:
   image:
-    repository: smailkoz/kea-dhcp-sidecar
+    repository: ghcr.io/mglants/kea-dhcp-sidecar
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is latest
-    tag: ""
+    tag: v0.0.2
   resources:
     limits:
       cpu: 50m
