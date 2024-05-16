@@ -79,7 +79,7 @@ data:
                 "name": "/data/dhcp6.leases"
             },
             "interfaces-config": {
-                "interfaces": [ "eth0" ],
+                "interfaces": [ "INTERFACE" ],
                 "dhcp-socket-type": "raw"
             },
             "valid-lifetime": {{ .Values.kea.dhcp6.validlifetime }},

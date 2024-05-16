@@ -28,6 +28,7 @@ nameOverride: ""
 fullnameOverride: ""
 clusterDomain: "cluster.local"
 kea:
+  # interface: eth1 - specify interface if needed for multus
   dhcp4:
     enabled: true
     validlifetime: "4000"

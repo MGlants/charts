@@ -48,8 +48,12 @@ spec:
         - |
           set -ex
           cp /mnt/config-map/* /mnt/kea/
+          {{- if .Values.kea.interface }}
+          interface={{ .Values.kea.interface }}
+          {{- else }}
           echo "Finding interface..."
           interface=$(route | grep '^default' | grep -o '[^ ]*$')
+          {{- end }}
           echo "Selected interface $interface"
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp4.conf
           sed -i "s/INTERFACE/${interface}/g" /mnt/kea/kea-dhcp6.conf
